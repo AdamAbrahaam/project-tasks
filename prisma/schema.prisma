@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+
+  name        String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks Task[]
+
+  @@map("projects")
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+
+  description String
+  state       TaskState @default(NEW)
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  tags Tag[]
+
+  @@map("tasks")
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+
+  name String @unique
+
+  tasks Task[]
+}
+
+enum TaskState {
+  NEW
+  PROCESSING
+  DONE
+}
