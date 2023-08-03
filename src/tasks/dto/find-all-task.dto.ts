@@ -17,4 +17,18 @@ export class FindAllTaskDto {
     return Number(value);
   })
   tagId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  page: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  count: number;
 }

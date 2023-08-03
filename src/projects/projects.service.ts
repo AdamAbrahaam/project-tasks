@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateProjectDto, FindAllProjectDto, UpdateProjectDto } from './dto';
 import { ProjectsRepository } from './projects.repository';
 
@@ -15,35 +15,41 @@ export class ProjectsService {
   }
 
   async findAll(query?: FindAllProjectDto) {
-    const projects = await this.repository.findMany({
-      where: {
-        name: {
-          contains: query?.name,
-          mode: 'insensitive',
-        },
-        description: {
-          contains: query?.description,
-          mode: 'insensitive',
-        },
-        createdAt: {
-          lte: query?.dateTo ? new Date(query.dateTo).toISOString() : undefined,
-          gte: query?.dateTo
-            ? new Date(query.dateFrom).toISOString()
-            : undefined,
-        },
-        tasks: (query?.taskId || query?.taskState || query?.tagId) && {
-          some: {
-            id: query?.taskId,
-            state: query?.taskState,
-            tags: {
-              some: query?.tagId && {
-                id: query?.tagId,
+    const projects = await this.repository.findMany(
+      {
+        where: {
+          name: {
+            contains: query?.name,
+            mode: 'insensitive',
+          },
+          description: {
+            contains: query?.description,
+            mode: 'insensitive',
+          },
+          createdAt: {
+            lte: query?.dateTo
+              ? new Date(query.dateTo).toISOString()
+              : undefined,
+            gte: query?.dateTo
+              ? new Date(query.dateFrom).toISOString()
+              : undefined,
+          },
+          tasks: (query?.taskId || query?.taskState || query?.tagId) && {
+            some: {
+              id: query?.taskId,
+              state: query?.taskState,
+              tags: {
+                some: query?.tagId && {
+                  id: query?.tagId,
+                },
               },
             },
           },
         },
       },
-    });
+      query?.page,
+      query?.count,
+    );
 
     return projects;
   }
