@@ -1,5 +1,6 @@
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PaginationDto, PaginationResultDto } from 'src/common/dtos';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_COUNT = 5;
@@ -68,15 +69,22 @@ export abstract class DbService<
       }),
     ]);
 
-    return {
-      data: result,
-      pagination: {
-        totalCount,
-        page,
-        count: count > Number(totalCount) ? totalCount : count,
-        lastPage: Math.ceil(Number(totalCount) / count),
-      },
-    };
+    const paginationDto = new PaginationDto({
+      totalCount: Number(totalCount),
+      paginationOptions: { page, count },
+    });
+
+    return new PaginationResultDto(result as any, paginationDto);
+
+    // return {
+    //   data: result,
+    //   pagination: {
+    //     totalCount,
+    //     page,
+    //     count: count > Number(totalCount) ? totalCount : count,
+    //     lastPage: Math.ceil(Number(totalCount) / count),
+    //   },
+    // };
   }
 
   async create(data: Args['create']): Promise<Return['create']> {

@@ -45,6 +45,9 @@ export class TagsService {
       where: {
         id,
       },
+      include: {
+        tasks: true,
+      },
     });
 
     return tag;

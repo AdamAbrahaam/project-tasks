@@ -5,7 +5,7 @@ import {
   DbService,
   DelegateArgs,
   DelegateReturnTypes,
-} from 'src/repositories/base.repository.abstract';
+} from 'src/common/repositories';
 
 type TaskDelegate = Prisma.TaskDelegate;
 
