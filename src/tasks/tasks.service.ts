@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTaskDto, UpdateTaskDto } from './dto';
+import { CreateTaskDto, FindAllTaskDto, UpdateTaskDto } from './dto';
 import { TasksRepository } from './tasks.repository';
 
 @Injectable()
@@ -27,14 +27,30 @@ export class TasksService {
     return task;
   }
 
-  async findAll() {
-    const tasks = await this.repository.findMany();
+  async findAll(projectId: number, query?: FindAllTaskDto) {
+    const tasks = await this.repository.findMany({
+      where: {
+        projectId,
+        description: {
+          contains: query?.description,
+          mode: 'insensitive',
+        },
+        state: {
+          equals: query?.taskState,
+        },
+        tags: query?.tagId && {
+          some: {
+            id: query.tagId,
+          },
+        },
+      },
+    });
 
     return tasks;
   }
 
   async findOne(id: number) {
-    const project = await this.repository.findFirst({
+    const project = await this.repository.findFirstOrThrow({
       where: {
         id,
       },
@@ -42,10 +58,6 @@ export class TasksService {
         tags: true,
       },
     });
-
-    if (!project) {
-      throw new NotFoundException('Incorrect ID');
-    }
 
     return project;
   }

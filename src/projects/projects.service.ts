@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProjectDto, UpdateProjectDto } from './dto';
+import { CreateProjectDto, FindAllProjectDto, UpdateProjectDto } from './dto';
 import { ProjectsRepository } from './projects.repository';
 
 @Injectable()
@@ -14,22 +14,49 @@ export class ProjectsService {
     return project;
   }
 
-  async findAll() {
-    const projects = await this.repository.findMany();
+  async findAll(query?: FindAllProjectDto) {
+    const projects = await this.repository.findMany({
+      where: {
+        name: {
+          contains: query?.name,
+          mode: 'insensitive',
+        },
+        description: {
+          contains: query?.description,
+          mode: 'insensitive',
+        },
+        createdAt: {
+          lte: query?.dateTo ? new Date(query.dateTo).toISOString() : undefined,
+          gte: query?.dateTo
+            ? new Date(query.dateFrom).toISOString()
+            : undefined,
+        },
+        tasks: (query?.taskId || query?.taskState || query?.tagId) && {
+          some: {
+            id: query?.taskId,
+            state: query?.taskState,
+            tags: {
+              some: query?.tagId && {
+                id: query?.tagId,
+              },
+            },
+          },
+        },
+      },
+    });
 
     return projects;
   }
 
   async findOne(id: number) {
-    const project = await this.repository.findFirst({
+    const project = await this.repository.findFirstOrThrow({
       where: {
         id,
       },
+      include: {
+        tasks: true,
+      },
     });
-
-    if (!project) {
-      throw new NotFoundException('Incorrect ID');
-    }
 
     return project;
   }
