@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { DbService, DelegateArgs, DelegateReturnTypes } from 'src/repositories';
+import {
+  DbService,
+  DelegateArgs,
+  DelegateReturnTypes,
+} from 'src/common/repositories';
 
 type ProjectDelegate = Prisma.ProjectDelegate;
 

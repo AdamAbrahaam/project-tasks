@@ -1,16 +1,20 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { TaskState } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class FindAllTaskDto {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   description?: string;
 
+  @ApiPropertyOptional({ enum: TaskState })
   @IsOptional()
   @IsEnum(TaskState)
   taskState?: TaskState;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => {
@@ -18,6 +22,7 @@ export class FindAllTaskDto {
   })
   tagId?: number;
 
+  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
   @Transform(({ value }) => {
@@ -25,6 +30,7 @@ export class FindAllTaskDto {
   })
   page: number;
 
+  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
   @Transform(({ value }) => {

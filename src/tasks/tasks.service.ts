@@ -19,7 +19,10 @@ export class TasksService {
           connect: tagIds,
         },
       },
-      include: {
+      select: {
+        id: true,
+        description: true,
+        state: true,
         tags: true,
       },
     });
@@ -54,16 +57,19 @@ export class TasksService {
   }
 
   async findOne(id: number) {
-    const project = await this.repository.findFirstOrThrow({
+    const task = await this.repository.findFirstOrThrow({
       where: {
         id,
       },
-      include: {
+      select: {
+        id: true,
+        description: true,
+        state: true,
         tags: true,
       },
     });
 
-    return project;
+    return task;
   }
 
   async update(id: number, dto: UpdateTaskDto) {

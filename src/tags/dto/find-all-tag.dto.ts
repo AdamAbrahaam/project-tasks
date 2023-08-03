@@ -3,8 +3,10 @@ import { CreateTagDto } from './index';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { TaskState } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FindAllTagDto extends PartialType(CreateTagDto) {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => {
@@ -12,11 +14,13 @@ export class FindAllTagDto extends PartialType(CreateTagDto) {
   })
   taskId?: number;
 
+  @ApiPropertyOptional({ enum: TaskState })
   @IsString()
   @IsOptional()
   @IsEnum(TaskState)
   taskState?: TaskState;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => {
@@ -24,6 +28,7 @@ export class FindAllTagDto extends PartialType(CreateTagDto) {
   })
   projectId?: number;
 
+  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
   @Transform(({ value }) => {
@@ -31,6 +36,7 @@ export class FindAllTagDto extends PartialType(CreateTagDto) {
   })
   page: number;
 
+  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
   @Transform(({ value }) => {
