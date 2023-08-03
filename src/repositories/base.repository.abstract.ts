@@ -3,6 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 type Operation =
   | 'findFirst'
+  | 'findFirstOrThrow'
   | 'findUnique'
   | 'findMany'
   | 'create'
@@ -24,6 +25,22 @@ export abstract class DbService<
     return this.db.findFirst(data);
   }
 
+  async findFirstOrThrow(
+    data?: Args['findFirstOrThrow'],
+  ): Promise<Return['findFirstOrThrow']> {
+    try {
+      const response = await this.db.findFirstOrThrow(data);
+      return response;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Record not found');
+        }
+      }
+      throw error;
+    }
+  }
+
   findUnique(data: Args['findUnique']): Return['findUnique'] {
     return this.db.findUnique(data);
   }
@@ -34,8 +51,8 @@ export abstract class DbService<
 
   async create(data: Args['create']): Promise<Return['create']> {
     try {
-      const tag = await this.db.create(data);
-      return tag;
+      const response = await this.db.create(data);
+      return response;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -56,9 +73,9 @@ export abstract class DbService<
 
   async update(data: Args['update']): Promise<Return['update']> {
     try {
-      const updatedProject = await this.db.update(data);
+      const response = await this.db.update(data);
 
-      return updatedProject;
+      return response;
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&

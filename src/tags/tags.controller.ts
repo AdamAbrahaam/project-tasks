@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
-import { CreateTagDto, UpdateTagDto } from './dto';
+import { CreateTagDto, UpdateTagDto, FindAllTagDto } from './dto';
 
 @Controller('tags')
 export class TagsController {
@@ -21,8 +21,8 @@ export class TagsController {
   }
 
   @Get()
-  findAll(@Query('name') name: string) {
-    return this.tagsService.findAll(name);
+  findAll(@Query() query: FindAllTagDto) {
+    return this.tagsService.findAll(query);
   }
 
   @Get(':id')
