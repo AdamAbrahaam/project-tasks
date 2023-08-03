@@ -23,4 +23,18 @@ export class FindAllTagDto extends PartialType(CreateTagDto) {
     return Number(value);
   })
   projectId?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  page: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  count: number;
 }

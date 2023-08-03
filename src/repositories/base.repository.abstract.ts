@@ -1,6 +1,9 @@
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
+const DEFAULT_PAGE = 1;
+const DEFAULT_COUNT = 5;
+
 type Operation =
   | 'findFirst'
   | 'findFirstOrThrow'
@@ -19,7 +22,11 @@ export abstract class DbService<
   Args extends { [K in Operation]: unknown },
   Return extends { [K in Operation]: unknown },
 > {
-  constructor(protected db: Db) {}
+  constructor(
+    protected db: Db,
+    protected defaultPage: number = DEFAULT_PAGE,
+    protected defaultCount: number = DEFAULT_COUNT,
+  ) {}
 
   findFirst(data?: Args['findFirst']): Return['findFirst'] {
     return this.db.findFirst(data);
@@ -45,8 +52,31 @@ export abstract class DbService<
     return this.db.findUnique(data);
   }
 
-  findMany(data?: Args['findMany']): Return['findMany'] {
-    return this.db.findMany(data);
+  async findMany(
+    data?: Args['findMany'],
+    page: number = this.defaultPage,
+    count: number = this.defaultCount,
+  ): Promise<Return['findMany']> {
+    const skip = page > 0 ? (page - 1) * count : 0;
+
+    const [totalCount, result] = await Promise.all([
+      this.db.count({ where: (data as any)?.where }),
+      this.db.findMany({
+        ...(data as any),
+        take: count,
+        skip,
+      }),
+    ]);
+
+    return {
+      data: result,
+      pagination: {
+        totalCount,
+        page,
+        count: count > Number(totalCount) ? totalCount : count,
+        lastPage: Math.ceil(Number(totalCount) / count),
+      },
+    };
   }
 
   async create(data: Args['create']): Promise<Return['create']> {

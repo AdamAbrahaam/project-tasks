@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTaskDto, FindAllTaskDto, UpdateTaskDto } from './dto';
 import { TasksRepository } from './tasks.repository';
 
@@ -28,23 +28,27 @@ export class TasksService {
   }
 
   async findAll(projectId: number, query?: FindAllTaskDto) {
-    const tasks = await this.repository.findMany({
-      where: {
-        projectId,
-        description: {
-          contains: query?.description,
-          mode: 'insensitive',
-        },
-        state: {
-          equals: query?.taskState,
-        },
-        tags: query?.tagId && {
-          some: {
-            id: query.tagId,
+    const tasks = await this.repository.findMany(
+      {
+        where: {
+          projectId,
+          description: {
+            contains: query?.description,
+            mode: 'insensitive',
+          },
+          state: {
+            equals: query?.taskState,
+          },
+          tags: query?.tagId && {
+            some: {
+              id: query.tagId,
+            },
           },
         },
       },
-    });
+      query?.page,
+      query?.count,
+    );
 
     return tasks;
   }

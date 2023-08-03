@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTagDto, FindAllTagDto, UpdateTagDto } from './dto';
 import { TagsRepository } from './tags.repository';
 
@@ -17,21 +17,25 @@ export class TagsService {
   }
 
   async findAll(query?: FindAllTagDto) {
-    const tags = await this.repository.findMany({
-      where: {
-        name: {
-          contains: query?.name,
-          mode: 'insensitive',
-        },
-        tasks: (query?.taskId || query?.projectId || query?.taskState) && {
-          some: {
-            id: query?.taskId,
-            projectId: query?.projectId,
-            state: query?.taskState,
+    const tags = await this.repository.findMany(
+      {
+        where: {
+          name: {
+            contains: query?.name,
+            mode: 'insensitive',
+          },
+          tasks: (query?.taskId || query?.projectId || query?.taskState) && {
+            some: {
+              id: query?.taskId,
+              projectId: query?.projectId,
+              state: query?.taskState,
+            },
           },
         },
       },
-    });
+      query?.page,
+      query?.count,
+    );
 
     return tags;
   }
