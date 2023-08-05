@@ -1,5 +1,3 @@
-import { NotFoundException, ConflictException } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PaginationDto, PaginationResultDto } from 'src/common/dtos';
 
 const DEFAULT_PAGE = 1;
@@ -33,20 +31,10 @@ export abstract class DbService<
     return this.db.findFirst(data);
   }
 
-  async findFirstOrThrow(
+  findFirstOrThrow(
     data?: Args['findFirstOrThrow'],
-  ): Promise<Return['findFirstOrThrow']> {
-    try {
-      const response = await this.db.findFirstOrThrow(data);
-      return response;
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Record not found');
-        }
-      }
-      throw error;
-    }
+  ): Return['findFirstOrThrow'] {
+    return this.db.findFirstOrThrow(data);
   }
 
   findUnique(data: Args['findUnique']): Return['findUnique'] {
@@ -77,61 +65,24 @@ export abstract class DbService<
     return new PaginationResultDto(result as any, paginationDto);
   }
 
-  async create(data: Args['create']): Promise<Return['create']> {
-    try {
-      const response = await this.db.create(data);
-      return response;
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException('Already exists');
-        }
-
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Record not found');
-        }
-      }
-      throw error;
-    }
+  create(data: Args['create']): Return['create'] {
+    return this.db.create(data);
   }
 
   createMany(data: Args['createMany']): Return['createMany'] {
     return this.db.createMany(data);
   }
 
-  async update(data: Args['update']): Promise<Return['update']> {
-    try {
-      const response = await this.db.update(data);
-
-      return response;
-    } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException('Record not found');
-      }
-      throw error;
-    }
+  update(data: Args['update']): Return['update'] {
+    return this.db.update(data);
   }
 
   updateMany(data: Args['updateMany']): Return['updateMany'] {
     return this.db.updateMany(data);
   }
 
-  async delete(data: Args['delete']): Promise<Return['delete']> {
-    try {
-      const response = await this.db.delete(data);
-      return response;
-    } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        throw new NotFoundException('Record not found');
-      }
-      throw error;
-    }
+  delete(data: Args['delete']): Return['delete'] {
+    return this.db.delete(data);
   }
 
   deleteMany(data?: Args['deleteMany']): Return['deleteMany'] {

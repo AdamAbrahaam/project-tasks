@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class HttpExceptionBodyDto {
   @ApiProperty({
@@ -13,9 +13,6 @@ export class HttpExceptionBodyDto {
     ],
   })
   message: string | string[];
-
-  @ApiPropertyOptional()
-  error?: string;
 
   @ApiProperty()
   statusCode: number;
