@@ -75,16 +75,6 @@ export abstract class DbService<
     });
 
     return new PaginationResultDto(result as any, paginationDto);
-
-    // return {
-    //   data: result,
-    //   pagination: {
-    //     totalCount,
-    //     page,
-    //     count: count > Number(totalCount) ? totalCount : count,
-    //     lastPage: Math.ceil(Number(totalCount) / count),
-    //   },
-    // };
   }
 
   async create(data: Args['create']): Promise<Return['create']> {
