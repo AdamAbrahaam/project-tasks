@@ -1,60 +1,13 @@
-import {
-  ApiTags,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiOperation,
-} from '@nestjs/swagger';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { ApiTags, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import {
-  CreateTaskDto,
-  FindAllTaskDto,
-  TaskDto,
-  TaskWithTagsDto,
-  UpdateTaskDto,
-} from './dto';
-import { ApiPaginationResponse } from '../common/decorators';
+import { TaskWithTagsDto, UpdateTaskDto } from './dto';
 import { documentation } from '../common/documentation';
 
-@Controller('projects/:projectId/tasks')
+@Controller('tasks')
 @ApiTags('Tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
-
-  @Post()
-  @ApiCreatedResponse({ type: TaskWithTagsDto })
-  @ApiOperation({
-    description: documentation.tasks.create.description,
-    summary: documentation.tasks.create.summary,
-  })
-  create(
-    @Param('projectId') projectId: string,
-    @Body() createTaskDto: CreateTaskDto,
-  ) {
-    return this.tasksService.create(+projectId, createTaskDto);
-  }
-
-  @Get()
-  @ApiPaginationResponse(TaskDto)
-  @ApiOperation({
-    description: documentation.tasks.findAll.description,
-    summary: documentation.tasks.findAll.summary,
-  })
-  findAll(
-    @Param('projectId') projectId: string,
-    @Query() query: FindAllTaskDto,
-  ) {
-    return this.tasksService.findAll(+projectId, query);
-  }
 
   @Get(':id')
   @ApiOkResponse({ type: TaskWithTagsDto })

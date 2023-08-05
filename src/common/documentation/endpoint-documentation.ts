@@ -18,17 +18,17 @@ export const documentation: ControllersDocumentation = {
     remove: {
       summary: 'Delete project',
     },
-  },
-  tasks: {
-    create: {
+    createTask: {
       summary: 'Create task for project',
     },
-    findOne: {
-      summary: 'Find project task by ID',
-    },
-    findAll: {
+    findAllTasks: {
       summary: 'Filter through project tasks',
       description: 'Every response is paginated',
+    },
+  },
+  tasks: {
+    findOne: {
+      summary: 'Find project task by ID',
     },
     update: {
       summary: 'Update task',
