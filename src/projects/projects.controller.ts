@@ -26,11 +26,21 @@ import {
 import { ApiPaginationResponse } from '../common/decorators';
 import { HttpExceptionBodyDto } from '../common/dtos';
 import { documentation } from '../common/documentation';
+import {
+  CreateTaskDto,
+  FindAllTaskDto,
+  TaskDto,
+  TaskWithTagsDto,
+} from 'src/tasks/dto';
+import { TasksService } from 'src/tasks/tasks.service';
 
 @Controller('projects')
 @ApiTags('Projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly tasksService: TasksService,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({ type: ProjectDto })
@@ -83,5 +93,25 @@ export class ProjectsController {
   })
   remove(@Param('id') id: string) {
     return this.projectsService.remove(+id);
+  }
+
+  @Post(':id/tasks')
+  @ApiCreatedResponse({ type: TaskWithTagsDto })
+  @ApiOperation({
+    description: documentation.projects.createTask.description,
+    summary: documentation.projects.createTask.summary,
+  })
+  createTask(@Param('id') id: string, @Body() createTaskDto: CreateTaskDto) {
+    return this.tasksService.create(+id, createTaskDto);
+  }
+
+  @Get(':id/tasks')
+  @ApiPaginationResponse(TaskDto)
+  @ApiOperation({
+    description: documentation.projects.findAllTasks.description,
+    summary: documentation.projects.findAllTasks.summary,
+  })
+  findAllTasks(@Param('id') id: string, @Query() query: FindAllTaskDto) {
+    return this.tasksService.findAll(+id, query);
   }
 }
