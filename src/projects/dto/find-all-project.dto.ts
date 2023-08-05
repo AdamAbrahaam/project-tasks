@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 import { CreateProjectDto } from '.';
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { TaskState } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';

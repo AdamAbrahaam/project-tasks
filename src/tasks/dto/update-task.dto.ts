@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateTaskDto } from './create-task.dto';
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/swagger';
 import { TaskState } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsOptional } from 'class-validator';
