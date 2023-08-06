@@ -84,19 +84,6 @@ describe('AppController (e2e)', () => {
           .expectStatus(200);
       });
     });
-
-    describe('Filter tags', () => {
-      it('by name', async () => {
-        return pactum
-          .spec()
-          .get('/tags')
-          .withQueryParams('name', 'To Do')
-          .expectStatus(200)
-          .expect((ctx) => {
-            expect(ctx.res.body.data[0].id).toEqual(1);
-          });
-      });
-    });
   });
 
   describe('Projects', () => {
@@ -188,33 +175,93 @@ describe('AppController (e2e)', () => {
       });
     });
 
-    describe('Filter tasks for project', () => {
-      it('by description', () => {
+    describe('Update project', () => {
+      it('should update project', async () => {
+        const newDescription = 'New project description';
+        await pactum
+          .spec()
+          .patch('/projects/{id}')
+          .withPathParams('id', 1)
+          .withBody({ description: newDescription })
+          .expectStatus(200)
+          .expectBodyContains(newDescription);
+
         return pactum
           .spec()
-          .get('/projects/{id}/tasks')
+          .get('/projects/{id}')
           .withPathParams('id', 1)
-          .withQueryParams('description', 'hire')
-          .expectStatus(200)
           .expect((ctx) => {
-            expect(ctx.res.body.data).toHaveLength(1);
+            expect(ctx.res.body.description).toEqual(newDescription);
           });
       });
+    });
+  });
 
-      it('by state', () => {
+  describe('Tasks', () => {
+    describe('Get task', () => {
+      it('should get task', () => {
         return pactum
           .spec()
-          .get('/projects/{id}/tasks')
+          .get('/tasks/{id}')
           .withPathParams('id', 1)
-          .withQueryParams('taskState', TaskState.NEW)
+          .expectStatus(200);
+      });
+    });
+
+    describe('Update task', () => {
+      it('should update task', () => {
+        const description = 'New description';
+
+        return pactum
+          .spec()
+          .patch('/tasks/{id}')
+          .withPathParams('id', 1)
+          .withBody({
+            description,
+            state: TaskState.PROCESSING,
+            tags: [1],
+          })
           .expectStatus(200)
+          .expectBodyContains(description)
           .expect((ctx) => {
-            expect(ctx.res.body.data).toHaveLength(2);
+            expect(ctx.res.body.state).toEqual(TaskState.PROCESSING);
+            expect(ctx.res.body.tags[0].id).toEqual(1);
           });
       });
     });
 
-    describe('Filter projects', () => {
+    describe('Delete task', () => {
+      it('should delete task', async () => {
+        await pactum
+          .spec()
+          .post('/projects/{id}/tasks')
+          .withPathParams('id', 1)
+          .withBody({ description: 'New task' });
+
+        return pactum
+          .spec()
+          .delete('/tasks/{id}')
+          .withPathParams('id', 4)
+          .expectStatus(200);
+      });
+    });
+  });
+
+  describe('Filters', () => {
+    describe('Tags', () => {
+      it('by name', async () => {
+        return pactum
+          .spec()
+          .get('/tags')
+          .withQueryParams('name', 'To Do')
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data[0].id).toEqual(1);
+          });
+      });
+    });
+
+    describe('Projects', () => {
       const projectsLength = 5;
 
       beforeAll(async () => {
@@ -254,7 +301,7 @@ describe('AppController (e2e)', () => {
         return pactum
           .spec()
           .get('/projects')
-          .withQueryParams('description', 'testing')
+          .withQueryParams('description', 'new')
           .expectStatus(200)
           .expect((ctx) => {
             expect(ctx.res.body.data).toHaveLength(1);
@@ -282,27 +329,140 @@ describe('AppController (e2e)', () => {
             expect(ctx.res.body.data).toHaveLength(2);
           });
       });
-    });
 
-    describe('Update project', () => {
-      it('should update project', async () => {
-        const newDescription = 'New project description';
-        await pactum
-          .spec()
-          .patch('/projects/{id}')
-          .withPathParams('id', 1)
-          .withBody({ description: newDescription })
-          .expectStatus(200)
-          .expectBodyContains(newDescription);
-
+      it('by tag ID', () => {
         return pactum
           .spec()
-          .get('/projects/{id}')
-          .withPathParams('id', 1)
+          .get('/projects')
+          .withQueryParams('tagId', 1)
+          .expectStatus(200)
           .expect((ctx) => {
-            expect(ctx.res.body.description).toEqual(newDescription);
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+    });
+
+    describe('Tasks', () => {
+      it('by description', () => {
+        return pactum
+          .spec()
+          .get('/projects/{id}/tasks')
+          .withPathParams('id', 2)
+          .withQueryParams('description', 'hire')
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+
+      it('by state', () => {
+        return pactum
+          .spec()
+          .get('/projects/{id}/tasks')
+          .withPathParams('id', 1)
+          .withQueryParams('taskState', TaskState.PROCESSING)
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+
+      it('by tag ID', () => {
+        return pactum
+          .spec()
+          .get('/projects/{id}/tasks')
+          .withPathParams('id', 1)
+          .withQueryParams('tagId', 1)
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+    });
+
+    describe('Tags', () => {
+      it('by name', () => {
+        return pactum
+          .spec()
+          .get('/tags')
+          .withPathParams('name', 'To')
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+
+      it('by task ID', () => {
+        return pactum
+          .spec()
+          .get('/tags')
+          .withPathParams('taskId', 1)
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+
+      it('by project ID', () => {
+        return pactum
+          .spec()
+          .get('/tags')
+          .withPathParams('projectId', 1)
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
+          });
+      });
+
+      it('by task state', () => {
+        return pactum
+          .spec()
+          .get('/tags')
+          .withPathParams('taskState', TaskState.PROCESSING)
+          .expectStatus(200)
+          .expect((ctx) => {
+            expect(ctx.res.body.data).toHaveLength(1);
           });
       });
     });
   });
+
+  describe('Pagination', () => {
+    it('should have 2 pages', async () => {
+      await pactum
+        .spec()
+        .get('/projects')
+        .expectStatus(200)
+        .expect((ctx) => {
+          expect(ctx.res.body.data).toHaveLength(5);
+
+          expect(ctx.res.body.pagination.page).toEqual(1);
+          expect(ctx.res.body.pagination.count).toEqual(5);
+          expect(ctx.res.body.pagination.totalCount).toEqual(6);
+          expect(ctx.res.body.pagination.lastPage).toEqual(2);
+        });
+
+      return pactum
+        .spec()
+        .get('/projects')
+        .withQueryParams('page', 2)
+        .expectStatus(200)
+        .expect((ctx) => {
+          expect(ctx.res.body.data).toHaveLength(1);
+
+          expect(ctx.res.body.pagination.page).toEqual(2);
+          expect(ctx.res.body.pagination.count).toEqual(5);
+          expect(ctx.res.body.pagination.totalCount).toEqual(6);
+          expect(ctx.res.body.pagination.lastPage).toEqual(2);
+        });
+    });
+  });
 });
+
+// [ 6
+//   { id: 1, description: 'Hire Adam', state: 'NEW', projectId: 1 },
+//   { id: 2, description: 'Hire Adam', state: 'NEW', projectId: 2 },
+//   { id: 3, description: 'New task 2', state: 'NEW', projectId: 1 }
+// ]
+
+// [ { id: 1, name: 'To Do' } ]

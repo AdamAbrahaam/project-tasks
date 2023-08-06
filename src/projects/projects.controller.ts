@@ -31,8 +31,8 @@ import {
   FindAllTaskDto,
   TaskDto,
   TaskWithTagsDto,
-} from 'src/tasks/dto';
-import { TasksService } from 'src/tasks/tasks.service';
+} from '../tasks/dto';
+import { TasksService } from '../tasks/tasks.service';
 
 @Controller('projects')
 @ApiTags('Projects')
