@@ -9,6 +9,17 @@ services:
       POSTGRES_PASSWORD: 4dm1n_*
       POSTGRES_DB: tasks
     networks:
-      - freecodecamp
+      - projecttasks
+
+  test-db:
+    image: postgres:13
+    ports:
+      - 5431:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 4dm1n_*
+      POSTGRES_DB: tasks
+    networks:
+      - projecttasks
 networks:
-  freecodecamp:
+  projecttasks:

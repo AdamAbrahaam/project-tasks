@@ -23,9 +23,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { ApiPaginationResponse } from 'src/common/decorators';
-import { HttpExceptionBodyDto } from 'src/common/dtos';
-import { documentation } from 'src/common/documentation';
+import { ApiPaginationResponse } from '../common/decorators';
+import { HttpExceptionBodyDto } from '../common/dtos';
+import { documentation } from '../common/documentation';
 
 @Controller('projects')
 @ApiTags('Projects')

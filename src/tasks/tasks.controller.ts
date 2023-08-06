@@ -22,8 +22,8 @@ import {
   TaskWithTagsDto,
   UpdateTaskDto,
 } from './dto';
-import { ApiPaginationResponse } from 'src/common/decorators';
-import { documentation } from 'src/common/documentation';
+import { ApiPaginationResponse } from '../common/decorators';
+import { documentation } from '../common/documentation';
 
 @Controller('projects/:projectId/tasks')
 @ApiTags('Tasks')
