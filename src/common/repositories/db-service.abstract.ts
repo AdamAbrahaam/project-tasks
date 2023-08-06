@@ -1,4 +1,4 @@
-import { PaginationDto, PaginationResultDto } from 'src/common/dtos';
+import { PaginationDto, PaginationResultDto } from '../dtos';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_COUNT = 5;

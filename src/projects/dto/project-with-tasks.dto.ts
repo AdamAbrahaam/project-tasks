@@ -1,4 +1,4 @@
-import { TaskDto } from 'src/tasks/dto';
+import { TaskDto } from '../../tasks/dto';
 import { ProjectDto } from './project.dto';
 import { ApiProperty } from '@nestjs/swagger';
 

@@ -68,7 +68,7 @@ export class ProjectsService {
   }
 
   async update(id: number, dto: UpdateProjectDto) {
-    return this.repository.update({
+    return await this.repository.update({
       where: {
         id,
       },
